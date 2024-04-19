@@ -1,0 +1,11 @@
+.*
+*.a
+*.lib
+*.so
+*.dll
+*.out
+*.exe
+
+build
+
+!.gitignore
