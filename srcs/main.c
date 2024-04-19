@@ -14,11 +14,10 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 */
 
+#include <mesh.h>
+#include <shader.h>
 #include <GLFW/glfw3.h>
-#include <gl/GL.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <types.h>
 
 struct __APP_T
 {
@@ -36,6 +35,23 @@ struct __APP_T
 typedef struct __APP_T app_t;
 app_t _app;
 
+GLfloat vertices[] =
+{
+    -0.5f, -0.28867f, 0,
+    0.5f, -0.28867f, 0,
+    0, 0.57735f, 0,
+    -0.25f, 0.14433f, 0,
+    0.25f, 0.14433f, 0,
+    0, -0.28867f, 0
+};
+
+GLubyte indices[] =
+{
+    0, 3, 5,
+    3, 2, 4,
+    5, 4, 1
+};
+
 void wrcr_handle_inputs(
     GLFWwindow *window, int key, int scancode, int action, int mods);
 inline void wrcr_calc_fps(void);
@@ -43,6 +59,7 @@ inline void wrcr_calc_fps(void);
 int main(void)
 {
     const GLFWvidmode *video_mode;
+    GLuint shader, vao, vbo, ebo;
 
     if (glfwInit() == GLFW_FALSE)
     {
@@ -52,7 +69,7 @@ int main(void)
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
     _app.monitor = glfwGetPrimaryMonitor();
@@ -74,7 +91,7 @@ int main(void)
     _app.width = video_mode->width;
     _app.height = video_mode->height;
 
-	_app.window = glfwCreateWindow(_app.width, _app.height, "World Creator", NULL, NULL);
+    _app.window = glfwCreateWindow(_app.width, _app.height, "World Creator", NULL, NULL);
     if (!_app.window)
     {
         fputs("Failed to create a GLFW window\n", stderr);
@@ -86,20 +103,40 @@ int main(void)
 
     glfwMakeContextCurrent(_app.window);
     glfwSetKeyCallback(_app.window, wrcr_handle_inputs);
+
+    gladLoadGL();
     glViewport(0, 0, _app.width, _app.height);
+
+    shader = wrcr_shader_init(WRCR_PROJECT_DIR "glsl/vert.glsl",
+        WRCR_PROJECT_DIR "glsl/frag.glsl");
+
+    glCreateVertexArrays(1, &vao);
+    vbo = wrcr_vbo_init(vertices, sizeof(vertices));
+    ebo = wrcr_ebo_init(indices, sizeof(indices));
+
+    wrcr_vao_link(vao, vbo, ebo);
 
     _app.last_time = glfwGetTime();
     _app.time_counter = 0;
     while (!glfwWindowShouldClose(_app.window))
     {
-        glClearColor(1, 0, 0, 1);
+        glClearColor(0.07f, 0.13f, 0.17f, 1);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shader);
+        glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_BYTE, 0);
 
         glfwSwapBuffers(_app.window);
         glfwPollEvents();
 
         wrcr_calc_fps();
     }
+
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+    glDeleteProgram(shader);
 
     glfwTerminate();
     return 0;

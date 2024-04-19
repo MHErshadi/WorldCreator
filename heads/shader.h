@@ -14,20 +14,13 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 */
 
-#ifndef __WRCR_TYPES__
-#define __WRCR_TYPES__
+#ifndef __WRCR_SHADER__
+#define __WRCR_SHADER__
 
-#include <inttypes.h>
+#include <glad/glad.h>
+#include <wrcr.h>
 
-typedef uint8_t wrcr_bool_t;
-typedef uint32_t wrcr_long_t;
-
-typedef double wrcr_double_t;
-
-typedef char wrcr_chr_t;
-typedef wrcr_chr_t *wrcr_str_t;
-
-#define WRCR_TRUE (wrcr_bool_t)1
-#define WRCR_FALSE (wrcr_bool_t)0
+GLuint wrcr_shader_init(
+    wrcr_str_ct vert, wrcr_str_ct frag);
 
 #endif
