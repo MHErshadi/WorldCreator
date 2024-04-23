@@ -15,15 +15,20 @@ copies or substantial portions of the Software.
 */
 
 #include <app.h>
+#include <shader.h>
+#include <texture.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void handle_inputs(
+void wrcr_handle_inputs(
     GLFWwindow *window, int key, int scancode, int action, int mods);
+void wrcr_window_resized(
+    GLFWwindow *window, int width, int height);
 
 int main(void)
 {
     const GLFWvidmode *video_mode;
+    GLuint shader, texture;
 
     if (glfwInit() == GLFW_FALSE)
     {
@@ -57,7 +62,8 @@ int main(void)
     }
 
     glfwMakeContextCurrent(_app.window);
-    glfwSetKeyCallback(_app.window, handle_inputs);
+    glfwSetKeyCallback(_app.window, wrcr_handle_inputs);
+    glfwSetWindowSizeCallback(_app.window, wrcr_window_resized);
 
     if (!gladLoadGL())
     {
@@ -68,17 +74,41 @@ int main(void)
 
     glViewport(0, 0, _app.width, _app.height);
 
+    shader = wrcr_shader_init(
+        WRCR_PROJECT_DIR "/glsl/vert.glsl",
+        WRCR_PROJECT_DIR "/glsl/frag.glsl");
+    if (shader == (GLuint)-1)
+    {
+        glfwTerminate();
+        return EXIT_FAILURE;
+    }
+
+    texture = wrcr_texture_init(WRCR_PROJECT_DIR "/texs/blockAtlas.png");
+    if (texture == (GLuint)-1)
+    {
+        wrcr_shader_delete(shader);
+        glfwTerminate();
+        return EXIT_FAILURE;
+    }
+
+    wrcr_texture_set_sampler(shader);
+
     while (!glfwWindowShouldClose(_app.window))
     {
+        wrcr_shader_use(shader);
+        wrcr_texture_bind(texture);
+
         glfwSwapBuffers(_app.window);
         glfwPollEvents();
     }
 
+    wrcr_texture_delete(texture);
+    wrcr_shader_delete(shader);
     glfwTerminate();
     return EXIT_SUCCESS;
 }
 
-void handle_inputs(
+void wrcr_handle_inputs(
     GLFWwindow *window, int key, int scancode, int action, int mods)
 {
     if (action != GLFW_PRESS)
@@ -102,4 +132,13 @@ void handle_inputs(
         }
         break;
     }
+}
+
+void wrcr_window_resized(
+    GLFWwindow *window, int width, int height)
+{
+    _app.width = width;
+    _app.height = height;
+
+    glViewport(0, 0, width, height);
 }

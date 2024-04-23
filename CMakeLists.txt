@@ -21,7 +21,7 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_C_FLAGS_MINSIZEREL "-Os")
     set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g")
 elseif (MSVC)
-    set(CMAKE_C_FLAGS "/Wall /wd4100 /wd4191 /wd4668 /wd4710 /wd4711 /wd4820 /WX")
+    set(CMAKE_C_FLAGS "/Wall /wd4100 /wd4191 /wd4668 /wd4710 /wd4711 /wd4820 /wd5045 /WX")
     set(CMAKE_C_FLAGS_DEBUG "/Od /Zi")
     set(CMAKE_C_FLAGS_RELEASE "/O2")
     set(CMAKE_C_FLAGS_MINSIZEREL "/Os")
@@ -29,7 +29,8 @@ elseif (MSVC)
 endif()
 
 add_executable(WorldCreator
-    srcs/main.c srcs/glad/glad.c)
+    srcs/main.c srcs/glad/glad.c srcs/wrcr.c
+    srcs/mesh.c srcs/shader.c srcs/texture.c)
 add_compile_definitions(WRCR_PROJECT_DIR="${PROJECT_SOURCE_DIR}/")
 
 target_include_directories(WorldCreator PRIVATE heads)
