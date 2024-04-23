@@ -14,13 +14,25 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 */
 
-#ifndef __WRCR_SHADER__
-#define __WRCR_SHADER__
+#ifndef __WRCR_APP__
+#define __WRCR_APP__
 
 #include <glad/glad.h>
-#include <wrcr.h>
+#include <GLFW/glfw3.h>
+#include <stdbool.h>
 
-GLuint wrcr_shader_init(
-    wrcr_str_ct vert, wrcr_str_ct frag);
+#pragma pack(push, 1)
+struct __APP_T
+{
+    GLFWwindow *window;
+    GLFWmonitor *monitor;
+
+    int width;
+    int height;
+
+    bool full_screen;
+};
+#pragma pack(pop)
+struct __APP_T _app;
 
 #endif
