@@ -19,14 +19,19 @@ copies or substantial portions of the Software.
 
 #include <block.h>
 
+#define WRCR_CHUNK_WIDTH 16
+#define WRCR_CHUNK_HEIGHT 1024
+
 #define WRCR_CHUNK_DEF_FACE_COUNT 8192
 
 #define WRCR_CHUNK_DEF_VERT_COUNT (WRCR_CHUNK_DEF_FACE_COUNT * 4)
 #define WRCR_CHUNK_DEF_IDX_COUNT (WRCR_CHUNK_DEF_FACE_COUNT * 6)
 
-struct __CHUNK_T
+struct __WRCR_CHUNK_T
 {
-    vertex_t *vertices;
+    wrcr_block_t data[WRCR_CHUNK_WIDTH][WRCR_CHUNK_HEIGHT][WRCR_CHUNK_WIDTH];
+
+    wrcr_vertex_t *vertices;
     GLuint *indices;
     GLuint vertex_idx;
 
@@ -36,11 +41,11 @@ struct __CHUNK_T
     GLuint vbo;
     GLuint ebo;
 };
-typedef struct __CHUNK_T chunk_t;
+typedef struct __WRCR_CHUNK_T wrcr_chunk_t;
 
 bool wrcr_chunk_init(
-    chunk_t *chunk);
+    wrcr_chunk_t *chunk);
 void wrcr_chunk_delete(
-    chunk_t *chunk);
+    wrcr_chunk_t *chunk);
 
 #endif

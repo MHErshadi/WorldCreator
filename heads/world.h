@@ -23,17 +23,17 @@ copies or substantial portions of the Software.
 extern "C" {
 #endif
 
-struct __WORLD_T
+struct __WRCR_WORLD_T
 {
-    color_t bg_color;
+    wrcr_color_t bg_color;
 
-    chunk_t chunk;
+    wrcr_chunk_t chunk;
 
     GLuint texture;
     GLuint vao;
     GLuint shader;
 };
-struct __WORLD_T _world;
+struct __WRCR_WORLD_T _world;
 
 bool wrcr_world_init(void);
 void wrcr_world_delete(void);

@@ -19,20 +19,18 @@ copies or substantial portions of the Software.
 
 #include <wrcr.h>
 
-#define WRCR_CAMERA_WALK_SPEED 4.317f
+#define WRCR_CAMERA_WALK_SPEED 5 * 4.317f
 #define WRCR_CAMERA_SPRINT_SPEED 5.612f
 #define WRCR_CAMERA_SNEAK_SPEED 1.295f
 
 #define WRCR_CAMERA_HEIGHT 1.8f
 #define WRCR_CAMERA_SNEAK_HEIGHT 1.5f
 
-#define wrcr_camera_get_uniform(id, name) glGetUniformLocation((id), name)
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct __CAMERA_T
+struct __WRCR_CAMERA_T
 {
     double mouse_x;
     double mouse_y;
@@ -57,7 +55,7 @@ struct __CAMERA_T
     bool sneaking : 1;
     bool grounded : 1;
 };
-struct __CAMERA_T _camera;
+struct __WRCR_CAMERA_T _camera;
 
 void wrcr_camera_init(
     double x, double y, double z);

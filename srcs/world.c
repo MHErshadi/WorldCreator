@@ -21,7 +21,7 @@ copies or substantial portions of the Software.
 
 bool wrcr_world_init(void)
 {
-    _world.bg_color = (color_t){0.012f, 0.776f, 0.988f};
+    _world.bg_color = (wrcr_color_t){0.012f, 0.776f, 0.988f};
 
     _world.shader = wrcr_shader_init(WRCR_PROJECT_DIR "glsl/vert.glsl", WRCR_PROJECT_DIR "glsl/frag.glsl");
     if (_world.shader == (GLuint)-1)

@@ -24,13 +24,13 @@ copies or substantial portions of the Software.
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-struct __COLOR_T
+struct __WRCR_COLOR_T
 {
     float r;
     float g;
     float b;
 };
-typedef struct __COLOR_T color_t;
+typedef struct __WRCR_COLOR_T wrcr_color_t;
 
 char *wrcr_get_file_data(size_t *size, FILE *file);
 

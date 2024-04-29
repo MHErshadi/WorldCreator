@@ -16,16 +16,21 @@ copies or substantial portions of the Software.
 
 #include <chunk.h>
 #include <mesh.h>
+#include <generation.h>
 #include <world.h>
 #include <stdlib.h>
 
+bool wrcr_generate_chunk(
+    wrcr_chunk_t *chunk);
 bool wrcr_add_block(
-    chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z);
+    wrcr_chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z);
+bool wrcr_check_block(
+    wrcr_chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z);
 
 bool wrcr_chunk_init(
-    chunk_t *chunk)
+    wrcr_chunk_t *chunk)
 {
-    chunk->vertices = malloc(WRCR_CHUNK_DEF_VERT_COUNT * sizeof(vertex_t));
+    chunk->vertices = malloc(WRCR_CHUNK_DEF_VERT_COUNT * sizeof(wrcr_vertex_t));
     if (!chunk->vertices)
         return false;
 
@@ -40,7 +45,7 @@ bool wrcr_chunk_init(
     chunk->size = 0;
     chunk->alloc = WRCR_CHUNK_DEF_FACE_COUNT;
 
-    if (!wrcr_add_block(chunk, 0, 0, 0))
+    if (!wrcr_generate_chunk(chunk))
     {
         free(chunk->vertices);
         free(chunk->indices);
@@ -65,26 +70,47 @@ bool wrcr_chunk_init(
 }
 
 void wrcr_chunk_delete(
-    chunk_t *chunk)
+    wrcr_chunk_t *chunk)
 {
     wrcr_mesh_buffer_delete(chunk->vbo);
     wrcr_mesh_buffer_delete(chunk->ebo);
 }
 
-bool wrcr_add_block(
-    chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z)
+bool wrcr_generate_chunk(
+    wrcr_chunk_t *chunk)
 {
-    vertex_t *vertices;
-    GLuint *indices;
-    uint32_t idx;
+    for (uint8_t x = 0; x != WRCR_CHUNK_WIDTH; x++)
+        for (uint16_t y = 0; y != WRCR_CHUNK_HEIGHT; y++)
+            for (uint8_t z = 0; z != WRCR_CHUNK_WIDTH; z++)
+                chunk->data[x][y][z] = wrcr_generation_get_block(x, y, z);
 
-    for (uint8_t i = 0; i != 24; i += 4)
+    for (uint8_t x = 0; x != WRCR_CHUNK_WIDTH; x++)
+        for (uint16_t y = 0; y != WRCR_CHUNK_HEIGHT; y++)
+            for (uint8_t z = 0; z != WRCR_CHUNK_WIDTH; z++)
+                if (!wrcr_add_block(chunk, x, y, z))
+                    return false;
+    return true;
+}
+
+bool wrcr_add_block(
+    wrcr_chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z)
+{
+    wrcr_vertex_t *vertices;
+    GLuint *indices;
+    wrcr_tcoord_t tcoord;
+    uint32_t idx;
+    uint8_t j;
+
+    for (uint8_t i = 0; i != 6; i++)
     {
+        if (wrcr_check_block(chunk, x + wrcr_block_faces[i][0], y + wrcr_block_faces[i][1], z + wrcr_block_faces[i][2]))
+            continue;
+
         if (chunk->size == chunk->alloc)
         {
             chunk->alloc += WRCR_CHUNK_DEF_FACE_COUNT;
 
-            vertices = realloc(chunk->vertices, chunk->alloc * 4 * sizeof(vertex_t));
+            vertices = realloc(chunk->vertices, chunk->alloc * 4 * sizeof(wrcr_vertex_t));
             if (vertices == NULL)
                 return false;
 
@@ -96,31 +122,34 @@ bool wrcr_add_block(
             chunk->indices = indices;
         }
 
-        idx = chunk->size * 4;
+        wrcr_generation_get_tcoord(&tcoord, wrcr_blocks[chunk->data[x][y][z]].texid[i]);
 
-        chunk->vertices[idx].pos = wrcr_block_vertices[i];
+        idx = chunk->size << 2;
+        j = i << 2;
+
+        chunk->vertices[idx].pos = wrcr_block_vertices[j];
         chunk->vertices[idx].pos.x += x;
         chunk->vertices[idx].pos.y += y;
         chunk->vertices[idx].pos.z += z;
-        chunk->vertices[idx++].tex = (tex_coord_t){      0, 0.9375f};
+        chunk->vertices[idx++].tex = tcoord;
 
-        chunk->vertices[idx].pos = wrcr_block_vertices[i + 1];
+        chunk->vertices[idx].pos = wrcr_block_vertices[j + 1];
         chunk->vertices[idx].pos.x += x;
         chunk->vertices[idx].pos.y += y;
         chunk->vertices[idx].pos.z += z;
-        chunk->vertices[idx++].tex = (tex_coord_t){      0,       1};
+        chunk->vertices[idx++].tex = (wrcr_tcoord_t){tcoord.x, tcoord.y + WRCR_TEXTURE_NORM_SIZE};
 
-        chunk->vertices[idx].pos = wrcr_block_vertices[i + 2];
+        chunk->vertices[idx].pos = wrcr_block_vertices[j + 2];
         chunk->vertices[idx].pos.x += x;
         chunk->vertices[idx].pos.y += y;
         chunk->vertices[idx].pos.z += z;
-        chunk->vertices[idx++].tex = (tex_coord_t){0.0625f, 0.9375f};
+        chunk->vertices[idx++].tex = (wrcr_tcoord_t){tcoord.x + WRCR_TEXTURE_NORM_SIZE, tcoord.y};
 
-        chunk->vertices[idx].pos = wrcr_block_vertices[i + 3];
+        chunk->vertices[idx].pos = wrcr_block_vertices[j + 3];
         chunk->vertices[idx].pos.x += x;
         chunk->vertices[idx].pos.y += y;
         chunk->vertices[idx].pos.z += z;
-        chunk->vertices[idx].tex = (tex_coord_t){0.0625f,       1};
+        chunk->vertices[idx].tex = (wrcr_tcoord_t){tcoord.x + WRCR_TEXTURE_NORM_SIZE, tcoord.y + WRCR_TEXTURE_NORM_SIZE};
 
         idx = chunk->size * 6;
 
@@ -136,4 +165,14 @@ bool wrcr_add_block(
     }
 
     return true;
+}
+
+bool wrcr_check_block(
+    wrcr_chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z)
+{
+    if (x == 255 || x == WRCR_CHUNK_WIDTH ||
+        z == 255 || z == WRCR_CHUNK_WIDTH ||
+        y == 0xffff || y == WRCR_CHUNK_HEIGHT)
+        return false;
+    return wrcr_blocks[chunk->data[x][y][z]].is_solid;
 }

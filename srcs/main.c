@@ -85,7 +85,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    wrcr_camera_init(0, -WRCR_CAMERA_HEIGHT, 2);
+    wrcr_camera_init(0, -WRCR_CAMERA_HEIGHT, 20);
 
     last_time = glfwGetTime();
     curr_time = last_time;

@@ -18,12 +18,12 @@ copies or substantial portions of the Software.
 #include <world.h>
 
 GLuint wrcr_mesh_vbo_init(
-    vertex_t *vertices, GLsizeiptr size)
+    wrcr_vertex_t *vertices, GLsizeiptr size)
 {
     GLuint id;
 
     glCreateBuffers(1, &id);
-    glNamedBufferData(id, size * sizeof(vertex_t), vertices, GL_STATIC_DRAW);
+    glNamedBufferData(id, size * sizeof(wrcr_vertex_t), vertices, GL_STATIC_DRAW);
     return id;
 }
 
@@ -46,9 +46,9 @@ void wrcr_mesh_vao_link(
 
     glEnableVertexArrayAttrib(_world.vao, 1);
     glVertexArrayAttribBinding(_world.vao, 1, 0);
-    glVertexArrayAttribFormat(_world.vao, 1, 2, GL_FLOAT, GL_FALSE, sizeof(coord_t));
+    glVertexArrayAttribFormat(_world.vao, 1, 2, GL_FLOAT, GL_FALSE, sizeof(wrcr_coord_t));
 
-    glVertexArrayVertexBuffer(_world.vao, 0, vbo, 0, sizeof(vertex_t));
+    glVertexArrayVertexBuffer(_world.vao, 0, vbo, 0, sizeof(wrcr_vertex_t));
     glVertexArrayElementBuffer(_world.vao, ebo);
 }
 

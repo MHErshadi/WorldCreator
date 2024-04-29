@@ -14,29 +14,27 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 */
 
-#ifndef __WRCR_APP__
-#define __WRCR_APP__
+#include <generation.h>
+#include <chunk.h>
 
-#include <wrcr.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-struct __WRCR_APP_T
+wrcr_block_t wrcr_generation_get_block(
+    int32_t x, uint16_t y, int32_t z)
 {
-    GLFWwindow *window;
-    GLFWmonitor *monitor;
-
-    int width;
-    int height;
-
-    bool full_screen;
-};
-struct __WRCR_APP_T _app;
-
-#ifdef __cplusplus
+    if (y == 0)
+        return WRCR_BLOCK_BEDROCK;
+    if (y < 250)
+        return WRCR_BLOCK_STONE;
+    if (y != WRCR_CHUNK_HEIGHT - 1)
+        return WRCR_BLOCK_DIRT;
+    return WRCR_BLOCK_GRASS;
 }
-#endif
 
-#endif
+void wrcr_generation_get_tcoord(
+    wrcr_tcoord_t *coord, wrcr_block_t id)
+{
+    coord->y = (GLfloat)(id / WRCR_TEXTURE_BLOCK_SIZE);
+    coord->x = id - coord->y * WRCR_TEXTURE_BLOCK_SIZE;
+
+    coord->x *= WRCR_TEXTURE_NORM_SIZE;
+    coord->y = 1 - (coord->y + 1) * WRCR_TEXTURE_NORM_SIZE;
+}

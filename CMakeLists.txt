@@ -49,7 +49,7 @@ endif()
 add_executable(WorldCreator
     srcs/main.c srcs/glad/glad.c srcs/wrcr.c
     srcs/mesh.c srcs/shader.c srcs/texture.c
-    srcs/chunk.c srcs/world.c
+    srcs/chunk.c srcs/world.c srcs/generation.c
     srcs/camera.cpp)
 add_compile_definitions(WRCR_PROJECT_DIR="${PROJECT_SOURCE_DIR}/")
 
