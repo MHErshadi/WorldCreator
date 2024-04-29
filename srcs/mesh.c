@@ -15,6 +15,7 @@ copies or substantial portions of the Software.
 */
 
 #include <mesh.h>
+#include <app.h>
 
 GLuint wrcr_mesh_vbo_init(
     vertex_t *vertices, GLsizeiptr size)
@@ -47,6 +48,13 @@ void wrcr_mesh_vao_link(
     glVertexArrayAttribBinding(vao, 1, 0);
     glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLdouble));
 
-	glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(vertex_t));
-	glVertexArrayElementBuffer(vao, ebo);
+    glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(vertex_t));
+    glVertexArrayElementBuffer(vao, ebo);
+}
+
+void wrcr_mesh_draw(
+    GLsizei size)
+{
+    glBindVertexArray(_app.vao);
+    glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, 0);
 }

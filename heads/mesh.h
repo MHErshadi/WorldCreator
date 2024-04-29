@@ -17,23 +17,11 @@ copies or substantial portions of the Software.
 #ifndef __WRCR_MESH__
 #define __WRCR_MESH__
 
-#include <glad/glad.h>
-
-struct __VERTEX_T
-{
-    GLdouble x;
-    GLdouble y;
-    GLdouble z;
-
-    GLfloat x_tex;
-    GLfloat y_tex;
-};
-typedef struct __VERTEX_T vertex_t;
+#include <block.h>
 
 #define wrcr_mesh_buffer_delete(id) glDeleteBuffers(1, &(id))
 
 #define wrcr_mesh_vao_init(id) glCreateVertexArrays(1, &(id))
-#define wrcr_mesh_vao_bind glBindVertexArray
 #define wrcr_mesh_vao_delete(id) glDeleteVertexArrays(1, &(id))
 
 GLuint wrcr_mesh_vbo_init(
@@ -43,5 +31,7 @@ GLuint wrcr_mesh_ebo_init(
 
 void wrcr_mesh_vao_link(
     GLuint vao, GLuint vbo, GLuint ebo);
+void wrcr_mesh_draw(
+    GLsizei size);
 
 #endif
