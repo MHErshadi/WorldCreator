@@ -27,10 +27,10 @@ copies or substantial portions of the Software.
 GLuint wrcr_mesh_vbo_init(
     vertex_t *vertices, GLsizeiptr size);
 GLuint wrcr_mesh_ebo_init(
-    GLushort *indices, GLsizeiptr size);
+    GLuint *indices, GLsizeiptr size);
 
 void wrcr_mesh_vao_link(
-    GLuint vao, GLuint vbo, GLuint ebo);
+    GLuint vbo, GLuint ebo);
 void wrcr_mesh_draw(
     GLsizei size);
 

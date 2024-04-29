@@ -17,7 +17,7 @@ copies or substantial portions of the Software.
 #ifndef __WRCR_SHADER__
 #define __WRCR_SHADER__
 
-#include <glad/glad.h>
+#include <wrcr.h>
 
 #define wrcr_shader_use glUseProgram
 #define wrcr_shader_delete glDeleteProgram

@@ -17,6 +17,7 @@ copies or substantial portions of the Software.
 #include <camera.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <app.h>
+#include <world.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/vector_angle.hpp>
@@ -49,8 +50,8 @@ void wrcr_camera_init(
     _camera.screen_ratio = (float)_app.width / (float)_app.height;
     _camera.far_clip = 100;
 
-    _camera.cam_matrix = glGetUniformLocation(_app.shader, "camMatrix");
-    _camera.cam_pos = glGetUniformLocation(_app.shader, "camPos");
+    _camera.cam_matrix = glGetUniformLocation(_world.shader, "camMatrix");
+    _camera.cam_pos = glGetUniformLocation(_world.shader, "camPos");
 
     _camera.vertical = 0;
     _camera.horizontal = 0;

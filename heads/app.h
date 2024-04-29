@@ -17,15 +17,12 @@ copies or substantial portions of the Software.
 #ifndef __WRCR_APP__
 #define __WRCR_APP__
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <stdbool.h>
+#include <wrcr.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#pragma pack(push, 1)
 struct __APP_T
 {
     GLFWwindow *window;
@@ -35,11 +32,7 @@ struct __APP_T
     int height;
 
     bool full_screen;
-
-    GLuint shader;
-    GLuint vao;
 };
-#pragma pack(pop)
 struct __APP_T _app;
 
 #ifdef __cplusplus

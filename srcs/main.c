@@ -15,13 +15,9 @@ copies or substantial portions of the Software.
 */
 
 #include <app.h>
-#include <mesh.h>
-#include <shader.h>
-#include <texture.h>
+#include <world.h>
 #include <camera.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 void wrcr_handle_inputs(
     GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -33,7 +29,6 @@ void wrcr_window_resized(
 int main(void)
 {
     const GLFWvidmode *video_mode;
-    GLuint texture, vao, vbo, ebo;
     double curr_time, last_time, new_time;
     float time_diff;
     int32_t fps_counter;
@@ -83,52 +78,21 @@ int main(void)
 
     glViewport(0, 0, _app.width, _app.height);
 
-    _app.shader = wrcr_shader_init(
-        WRCR_PROJECT_DIR "glsl/vert.glsl",
-        WRCR_PROJECT_DIR "glsl/frag.glsl");
-    if (_app.shader == (GLuint)-1)
+    if (!wrcr_world_init())
     {
+        fputs("Failed to load the world\n", stderr);
         glfwTerminate();
         return EXIT_FAILURE;
     }
 
-    texture = wrcr_texture_init(WRCR_PROJECT_DIR "texs/blockAtlas.png");
-    if (texture == (GLuint)-1)
-    {
-        wrcr_shader_delete(_app.shader);
-        glfwTerminate();
-        return EXIT_FAILURE;
-    }
-
-    wrcr_texture_set_sampler(_app.shader);
-
-    wrcr_mesh_vao_init(vao);
-    _app.vao = vao;
-
-    vbo = wrcr_mesh_vbo_init(wrcr_block_vertices, 24);
-    ebo = wrcr_mesh_ebo_init(wrcr_block_indices, 36);
-    wrcr_mesh_vao_link(vao, vbo, ebo);
-
-    wrcr_camera_init(0 + ADD, -WRCR_CAMERA_HEIGHT + ADD, 2 + ADD);
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glFrontFace(GL_CCW);
+    wrcr_camera_init(0, -WRCR_CAMERA_HEIGHT, 2);
 
     last_time = glfwGetTime();
     curr_time = last_time;
     fps_counter = 0;
     while (!glfwWindowShouldClose(_app.window))
     {
-        glClearColor(0.03f, 0.3f, 0.7f, 1);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        wrcr_shader_use(_app.shader);
-        wrcr_texture_bind(texture);
-        wrcr_mesh_draw(36);
+        wrcr_world_draw();
 
         new_time = glfwGetTime();
         wrcr_camera_move((float)(new_time - curr_time));
@@ -149,11 +113,7 @@ int main(void)
         glfwPollEvents();
     }
 
-    wrcr_shader_delete(_app.shader);
-    wrcr_texture_delete(texture);
-    wrcr_mesh_vao_delete(vao);
-    wrcr_mesh_buffer_delete(vbo);
-    wrcr_mesh_buffer_delete(ebo);
+    wrcr_world_delete();
     glfwTerminate();
     return EXIT_SUCCESS;
 }

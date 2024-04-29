@@ -17,7 +17,7 @@ copies or substantial portions of the Software.
 #ifndef __WRCR_TEXTURE__
 #define __WRCR_TEXTURE__
 
-#include <glad/glad.h>
+#include <wrcr.h>
 
 #define wrcr_texture_bind(id) glBindTextureUnit(0, id)
 #define wrcr_texture_delete(id) glDeleteTextures(1, &(id))

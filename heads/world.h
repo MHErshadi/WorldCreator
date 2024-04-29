@@ -14,24 +14,34 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 */
 
-#ifndef __WRCR__
-#define __WRCR__
+#ifndef __WRCR_WORLD__
+#define __WRCR_WORLD__
 
-#include <stdio.h>
-#include <inttypes.h>
-#include <stdbool.h>
+#include <chunk.h>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-struct __COLOR_T
+struct __WORLD_T
 {
-    float r;
-    float g;
-    float b;
-};
-typedef struct __COLOR_T color_t;
+    color_t bg_color;
 
-char *wrcr_get_file_data(size_t *size, FILE *file);
+    chunk_t chunk;
+
+    GLuint texture;
+    GLuint vao;
+    GLuint shader;
+};
+struct __WORLD_T _world;
+
+bool wrcr_world_init(void);
+void wrcr_world_delete(void);
+
+void wrcr_world_draw(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

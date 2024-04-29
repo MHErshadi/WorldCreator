@@ -14,24 +14,33 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 */
 
-#ifndef __WRCR__
-#define __WRCR__
+#ifndef __WRCR_CHUNK__
+#define __WRCR_CHUNK__
 
-#include <stdio.h>
-#include <inttypes.h>
-#include <stdbool.h>
+#include <block.h>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#define WRCR_CHUNK_DEF_FACE_COUNT 8192
 
-struct __COLOR_T
+#define WRCR_CHUNK_DEF_VERT_COUNT (WRCR_CHUNK_DEF_FACE_COUNT * 4)
+#define WRCR_CHUNK_DEF_IDX_COUNT (WRCR_CHUNK_DEF_FACE_COUNT * 6)
+
+struct __CHUNK_T
 {
-    float r;
-    float g;
-    float b;
-};
-typedef struct __COLOR_T color_t;
+    vertex_t *vertices;
+    GLuint *indices;
+    GLuint vertex_idx;
 
-char *wrcr_get_file_data(size_t *size, FILE *file);
+    uint32_t size;
+    uint32_t alloc;
+
+    GLuint vbo;
+    GLuint ebo;
+};
+typedef struct __CHUNK_T chunk_t;
+
+bool wrcr_chunk_init(
+    chunk_t *chunk);
+void wrcr_chunk_delete(
+    chunk_t *chunk);
 
 #endif

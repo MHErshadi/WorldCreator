@@ -17,63 +17,62 @@ copies or substantial portions of the Software.
 #ifndef __WRCR_BLOCK__
 #define __WRCR_BLOCK__
 
-#include <glad/glad.h>
+#include <wrcr.h>
 
-#define ADD 10
-
-struct __VERTEX_T
+struct __COORD_T
 {
     GLdouble x;
     GLdouble y;
     GLdouble z;
+};
+typedef struct __COORD_T coord_t;
 
-    GLfloat x_tex;
-    GLfloat y_tex;
+struct __TEX_COORD_T
+{
+    GLfloat x;
+    GLfloat y;
+};
+typedef struct __TEX_COORD_T tex_coord_t;
+
+struct __VERTEX_T
+{
+    coord_t pos;
+    tex_coord_t tex;
 };
 typedef struct __VERTEX_T vertex_t;
 
-static vertex_t wrcr_block_vertices[24] =
+static coord_t wrcr_block_vertices[24] =
 {
-    //Top
-    { 0.5 + ADD,  0.5 + ADD, -0.5 + ADD, 0.0625f, 0.9375f},
-    { 0.5 + ADD,  0.5 + ADD,  0.5 + ADD, 0.0625f,       1},
-    {-0.5 + ADD,  0.5 + ADD, -0.5 + ADD,       0, 0.9375f},
-    {-0.5 + ADD,  0.5 + ADD,  0.5 + ADD,       0,       1},
-    //Bottom
-    {-0.5 + ADD, -0.5 + ADD, -0.5 + ADD, 0.0625f, 0.9375f},
-    {-0.5 + ADD, -0.5 + ADD,  0.5 + ADD, 0.0625f,       1},
-    { 0.5 + ADD, -0.5 + ADD, -0.5 + ADD,       0, 0.9375f},
-    { 0.5 + ADD, -0.5 + ADD,  0.5 + ADD,       0,       1},
-    //Front
-    {-0.5 + ADD, -0.5 + ADD,  0.5 + ADD, 0.0625f, 0.9375f},
-    {-0.5 + ADD,  0.5 + ADD,  0.5 + ADD, 0.0625f,       1},
-    { 0.5 + ADD, -0.5 + ADD,  0.5 + ADD,       0, 0.9375f},
-    { 0.5 + ADD,  0.5 + ADD,  0.5 + ADD,       0,       1},
-    //Back
-    { 0.5 + ADD, -0.5 + ADD, -0.5 + ADD, 0.0625f, 0.9375f},
-    { 0.5 + ADD,  0.5 + ADD, -0.5 + ADD, 0.0625f,       1},
-    {-0.5 + ADD, -0.5 + ADD, -0.5 + ADD,       0, 0.9375f},
-    {-0.5 + ADD,  0.5 + ADD, -0.5 + ADD,       0,       1},
-    //Right
-    { 0.5 + ADD, -0.5 + ADD,  0.5 + ADD, 0.0625f, 0.9375f},
-    { 0.5 + ADD,  0.5 + ADD,  0.5 + ADD, 0.0625f,       1},
-    { 0.5 + ADD, -0.5 + ADD, -0.5 + ADD,       0, 0.9375f},
-    { 0.5 + ADD,  0.5 + ADD, -0.5 + ADD,       0,       1},
-    //Left
-    {-0.5 + ADD, -0.5 + ADD, -0.5 + ADD, 0.0625f, 0.9375f},
-    {-0.5 + ADD,  0.5 + ADD, -0.5 + ADD, 0.0625f,       1},
-    {-0.5 + ADD, -0.5 + ADD,  0.5 + ADD,       0, 0.9375f},
-    {-0.5 + ADD,  0.5 + ADD,  0.5 + ADD,       0,       1},
-};
-
-static GLushort wrcr_block_indices[36] =
-{
-     0,  1,  2,  2,  1,  3,
-     4,  5,  6,  6,  5,  7,
-     8,  9, 10, 10,  9, 11,
-    12, 13, 14, 14, 13, 15,
-    16, 17, 18, 18, 17, 19,
-    20, 21, 22, 22, 21, 23,
+    // top
+    { 0.5f,  0.5f, -0.5f},
+    { 0.5f,  0.5f,  0.5f},
+    {-0.5f,  0.5f, -0.5f},
+    {-0.5f,  0.5f,  0.5f},
+    // bottom
+    {-0.5f, -0.5f, -0.5f},
+    {-0.5f, -0.5f,  0.5f},
+    { 0.5f, -0.5f, -0.5f},
+    { 0.5f, -0.5f,  0.5f},
+    // front
+    {-0.5f, -0.5f,  0.5f},
+    {-0.5f,  0.5f,  0.5f},
+    { 0.5f, -0.5f,  0.5f},
+    { 0.5f,  0.5f,  0.5f},
+    // back
+    { 0.5f, -0.5f, -0.5f},
+    { 0.5f,  0.5f, -0.5f},
+    {-0.5f, -0.5f, -0.5f},
+    {-0.5f,  0.5f, -0.5f},
+    // right
+    { 0.5f, -0.5f,  0.5f},
+    { 0.5f,  0.5f,  0.5f},
+    { 0.5f, -0.5f, -0.5f},
+    { 0.5f,  0.5f, -0.5f},
+    // left
+    {-0.5f, -0.5f, -0.5f},
+    {-0.5f,  0.5f, -0.5f},
+    {-0.5f, -0.5f,  0.5f},
+    {-0.5f,  0.5f,  0.5f}
 };
 
 #endif

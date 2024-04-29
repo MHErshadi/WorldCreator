@@ -17,9 +17,7 @@ copies or substantial portions of the Software.
 #ifndef __WRCR_CAMERA__
 #define __WRCR_CAMERA__
 
-#include <glad/glad.h>
-#include <inttypes.h>
-#include <stdbool.h>
+#include <wrcr.h>
 
 #define WRCR_CAMERA_WALK_SPEED 4.317f
 #define WRCR_CAMERA_SPRINT_SPEED 5.612f
@@ -34,7 +32,6 @@ copies or substantial portions of the Software.
 extern "C" {
 #endif
 
-#pragma pack(push, 1)
 struct __CAMERA_T
 {
     double mouse_x;
@@ -60,7 +57,6 @@ struct __CAMERA_T
     bool sneaking : 1;
     bool grounded : 1;
 };
-#pragma pack(pop)
 struct __CAMERA_T _camera;
 
 void wrcr_camera_init(

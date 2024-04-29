@@ -15,7 +15,7 @@ copies or substantial portions of the Software.
 */
 
 #include <mesh.h>
-#include <app.h>
+#include <world.h>
 
 GLuint wrcr_mesh_vbo_init(
     vertex_t *vertices, GLsizeiptr size)
@@ -28,33 +28,33 @@ GLuint wrcr_mesh_vbo_init(
 }
 
 GLuint wrcr_mesh_ebo_init(
-    GLushort *indices, GLsizeiptr size)
+    GLuint *indices, GLsizeiptr size)
 {
     GLuint id;
 
     glCreateBuffers(1, &id);
-    glNamedBufferData(id, size * sizeof(GLushort), indices, GL_STATIC_DRAW);
+    glNamedBufferData(id, size * sizeof(GLuint), indices, GL_STATIC_DRAW);
     return id;
 }
 
 void wrcr_mesh_vao_link(
-    GLuint vao, GLuint vbo, GLuint ebo)
+    GLuint vbo, GLuint ebo)
 {
-    glEnableVertexArrayAttrib(vao, 0);
-    glVertexArrayAttribBinding(vao, 0, 0);
-    glVertexArrayAttribFormat(vao, 0, 3, GL_DOUBLE, GL_FALSE, 0);
+    glEnableVertexArrayAttrib(_world.vao, 0);
+    glVertexArrayAttribBinding(_world.vao, 0, 0);
+    glVertexArrayAttribFormat(_world.vao, 0, 3, GL_DOUBLE, GL_FALSE, 0);
 
-    glEnableVertexArrayAttrib(vao, 1);
-    glVertexArrayAttribBinding(vao, 1, 0);
-    glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLdouble));
+    glEnableVertexArrayAttrib(_world.vao, 1);
+    glVertexArrayAttribBinding(_world.vao, 1, 0);
+    glVertexArrayAttribFormat(_world.vao, 1, 2, GL_FLOAT, GL_FALSE, sizeof(coord_t));
 
-    glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(vertex_t));
-    glVertexArrayElementBuffer(vao, ebo);
+    glVertexArrayVertexBuffer(_world.vao, 0, vbo, 0, sizeof(vertex_t));
+    glVertexArrayElementBuffer(_world.vao, ebo);
 }
 
 void wrcr_mesh_draw(
     GLsizei size)
 {
-    glBindVertexArray(_app.vao);
-    glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, 0);
+    glBindVertexArray(_world.vao);
+    glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
 }

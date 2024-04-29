@@ -16,7 +16,6 @@ copies or substantial portions of the Software.
 
 #include <texture.h>
 #include <shader.h>
-#include <stdbool.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
