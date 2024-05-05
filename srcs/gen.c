@@ -14,22 +14,26 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 */
 
-#include <generation.h>
-#include <chunk.h>
+#include <gen.h>
+#include <world.h>
 
-wrcr_block_t wrcr_generation_get_block(
-    int32_t x, uint16_t y, int32_t z)
+wrcr_block_t wrcr_gen_get_block(
+    uint32_t x, uint16_t y, uint32_t z)
 {
+    if (x == 0xffffffff || x == WRCR_WORLD_BLOCK_SIZE ||
+        z == 0xffffffff || z == WRCR_WORLD_BLOCK_SIZE)
+        return WRCR_BLOCK_AIR;
+
     if (y == 0)
         return WRCR_BLOCK_BEDROCK;
-    if (y < 250)
+    if (y % 2)
         return WRCR_BLOCK_STONE;
     if (y != WRCR_CHUNK_HEIGHT - 1)
         return WRCR_BLOCK_DIRT;
     return WRCR_BLOCK_GRASS;
 }
 
-void wrcr_generation_get_tcoord(
+void wrcr_gen_get_tcoord(
     wrcr_tcoord_t *coord, wrcr_block_t id)
 {
     coord->y = (GLfloat)(id / WRCR_TEXTURE_BLOCK_SIZE);

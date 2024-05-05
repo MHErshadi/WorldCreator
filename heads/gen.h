@@ -19,13 +19,10 @@ copies or substantial portions of the Software.
 
 #include <block.h>
 
-#define WRCR_TEXTURE_BLOCK_SIZE 16
-#define WRCR_TEXTURE_NORM_SIZE (1.0f / WRCR_TEXTURE_BLOCK_SIZE)
+wrcr_block_t wrcr_gen_get_block(
+    uint32_t x, uint16_t y, uint32_t z);
 
-wrcr_block_t wrcr_generation_get_block(
-    int32_t x, uint16_t y, int32_t z);
-
-void wrcr_generation_get_tcoord(
+void wrcr_gen_get_tcoord(
     wrcr_tcoord_t *coord, wrcr_block_t id);
 
 #endif

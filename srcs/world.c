@@ -18,9 +18,13 @@ copies or substantial portions of the Software.
 #include <mesh.h>
 #include <shader.h>
 #include <texture.h>
+#include <stdlib.h>
 
 bool wrcr_world_init(void)
 {
+    uint16_t idx;
+    uint8_t i, j;
+
     _world.bg_color = (wrcr_color_t){0.012f, 0.776f, 0.988f};
 
     _world.shader = wrcr_shader_init(WRCR_PROJECT_DIR "glsl/vert.glsl", WRCR_PROJECT_DIR "glsl/frag.glsl");
@@ -35,14 +39,25 @@ bool wrcr_world_init(void)
     }
 
     wrcr_texture_set_sampler(_world.shader);
-    wrcr_mesh_vao_init(_world.vao);
 
-    if (!wrcr_chunk_init(&_world.chunk))
+    _world.chunks = malloc(WRCR_WORLD_CHUNK_AREA * sizeof(wrcr_chunk_t));
+    if (_world.chunks == NULL)
     {
         wrcr_shader_delete(_world.shader);
         wrcr_texture_delete(_world.texture);
-        wrcr_mesh_vao_delete(_world.vao);
         return false;
+    }
+
+    for (i = 0; i != WRCR_WORLD_CHUNK_SIZE; i++)
+    {
+        idx = i * WRCR_WORLD_CHUNK_SIZE;
+        for (j = 0; j != WRCR_WORLD_CHUNK_SIZE; j++)
+            if (!wrcr_chunk_init(_world.chunks + idx + j, i, j))
+            {
+                wrcr_shader_delete(_world.shader);
+                wrcr_texture_delete(_world.texture);
+                return false;
+            }
     }
 
     glEnable(GL_DEPTH_TEST);
@@ -56,18 +71,30 @@ bool wrcr_world_init(void)
 
 void wrcr_world_delete(void)
 {
-    wrcr_chunk_delete(&_world.chunk);
+    uint16_t i;
+
+    for (i = 0; i != WRCR_WORLD_CHUNK_AREA; i++)
+        wrcr_chunk_delete(_world.chunks + i);
+    free(_world.chunks);
+
     wrcr_shader_delete(_world.shader);
     wrcr_texture_delete(_world.texture);
-    wrcr_mesh_vao_delete(_world.vao);
 }
 
 void wrcr_world_draw(void)
 {
+    wrcr_chunk_t *chunk;
+    uint16_t i;
+
     glClearColor(_world.bg_color.r, _world.bg_color.g, _world.bg_color.b, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     wrcr_shader_use(_world.shader);
     wrcr_texture_bind(_world.texture);
-    wrcr_mesh_draw(_world.chunk.size * 6);
+
+    for (i = 0; i != WRCR_WORLD_CHUNK_AREA; i++)
+    {
+        chunk = _world.chunks + i;
+        wrcr_mesh_draw(chunk->vao, chunk->size * 6);
+    }
 }

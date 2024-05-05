@@ -16,7 +16,7 @@ copies or substantial portions of the Software.
 
 #include <chunk.h>
 #include <mesh.h>
-#include <generation.h>
+#include <gen.h>
 #include <world.h>
 #include <stdlib.h>
 
@@ -25,10 +25,10 @@ bool wrcr_generate_chunk(
 bool wrcr_add_block(
     wrcr_chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z);
 bool wrcr_check_block(
-    wrcr_chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z);
+    wrcr_chunk_t *chunk, wrcr_bcoord_t coord);
 
 bool wrcr_chunk_init(
-    wrcr_chunk_t *chunk)
+    wrcr_chunk_t *chunk, uint8_t x, uint8_t y)
 {
     chunk->vertices = malloc(WRCR_CHUNK_DEF_VERT_COUNT * sizeof(wrcr_vertex_t));
     if (!chunk->vertices)
@@ -41,6 +41,7 @@ bool wrcr_chunk_init(
         return false;
     }
 
+    chunk->coord = (wrcr_ccoord_t){x * WRCR_CHUNK_WIDTH, y * WRCR_CHUNK_WIDTH};
     chunk->vertex_idx = 0;
     chunk->size = 0;
     chunk->alloc = WRCR_CHUNK_DEF_FACE_COUNT;
@@ -52,10 +53,11 @@ bool wrcr_chunk_init(
         return false;
     }
 
+    wrcr_mesh_vao_init(chunk->vao);
     chunk->vbo = wrcr_mesh_vbo_init(chunk->vertices, chunk->size * 4);
     chunk->ebo = wrcr_mesh_ebo_init(chunk->indices, chunk->size * 6);
 
-    wrcr_mesh_vao_link(chunk->vbo, chunk->ebo);
+    wrcr_mesh_vao_link(chunk->vao, chunk->vbo, chunk->ebo);
 
     free(chunk->vertices);
     free(chunk->indices);
@@ -72,6 +74,7 @@ bool wrcr_chunk_init(
 void wrcr_chunk_delete(
     wrcr_chunk_t *chunk)
 {
+    wrcr_mesh_vao_delete(chunk->vao);
     wrcr_mesh_buffer_delete(chunk->vbo);
     wrcr_mesh_buffer_delete(chunk->ebo);
 }
@@ -82,7 +85,7 @@ bool wrcr_generate_chunk(
     for (uint8_t x = 0; x != WRCR_CHUNK_WIDTH; x++)
         for (uint16_t y = 0; y != WRCR_CHUNK_HEIGHT; y++)
             for (uint8_t z = 0; z != WRCR_CHUNK_WIDTH; z++)
-                chunk->data[x][y][z] = wrcr_generation_get_block(x, y, z);
+                chunk->data[x][y][z] = wrcr_gen_get_block(chunk->coord.x + x, y, chunk->coord.z + z);
 
     for (uint8_t x = 0; x != WRCR_CHUNK_WIDTH; x++)
         for (uint16_t y = 0; y != WRCR_CHUNK_HEIGHT; y++)
@@ -97,13 +100,21 @@ bool wrcr_add_block(
 {
     wrcr_vertex_t *vertices;
     GLuint *indices;
+    wrcr_fcoord_t fcoord;
+    wrcr_bcoord_t bcoord;
     wrcr_tcoord_t tcoord;
     uint32_t idx;
-    uint8_t j;
+    uint8_t i4, j;
+
+    if (!wrcr_blocks[chunk->data[x][y][z]].has_mesh)
+        return true;
 
     for (uint8_t i = 0; i != 6; i++)
     {
-        if (wrcr_check_block(chunk, x + wrcr_block_faces[i][0], y + wrcr_block_faces[i][1], z + wrcr_block_faces[i][2]))
+        fcoord = wrcr_block_faces[i];
+        bcoord = (wrcr_bcoord_t){x + fcoord.x, y + fcoord.y, z + fcoord.z};
+
+        if (wrcr_check_block(chunk, bcoord))
             continue;
 
         if (chunk->size == chunk->alloc)
@@ -122,43 +133,30 @@ bool wrcr_add_block(
             chunk->indices = indices;
         }
 
-        wrcr_generation_get_tcoord(&tcoord, wrcr_blocks[chunk->data[x][y][z]].texid[i]);
+        wrcr_gen_get_tcoord(&tcoord, wrcr_blocks[chunk->data[x][y][z]].texid[i]);
 
         idx = chunk->size << 2;
-        j = i << 2;
+        i4 = i << 2;
 
-        chunk->vertices[idx].pos = wrcr_block_vertices[j];
-        chunk->vertices[idx].pos.x += x;
-        chunk->vertices[idx].pos.y += y;
-        chunk->vertices[idx].pos.z += z;
-        chunk->vertices[idx++].tex = tcoord;
-
-        chunk->vertices[idx].pos = wrcr_block_vertices[j + 1];
-        chunk->vertices[idx].pos.x += x;
-        chunk->vertices[idx].pos.y += y;
-        chunk->vertices[idx].pos.z += z;
-        chunk->vertices[idx++].tex = (wrcr_tcoord_t){tcoord.x, tcoord.y + WRCR_TEXTURE_NORM_SIZE};
-
-        chunk->vertices[idx].pos = wrcr_block_vertices[j + 2];
-        chunk->vertices[idx].pos.x += x;
-        chunk->vertices[idx].pos.y += y;
-        chunk->vertices[idx].pos.z += z;
-        chunk->vertices[idx++].tex = (wrcr_tcoord_t){tcoord.x + WRCR_TEXTURE_NORM_SIZE, tcoord.y};
-
-        chunk->vertices[idx].pos = wrcr_block_vertices[j + 3];
-        chunk->vertices[idx].pos.x += x;
-        chunk->vertices[idx].pos.y += y;
-        chunk->vertices[idx].pos.z += z;
-        chunk->vertices[idx].tex = (wrcr_tcoord_t){tcoord.x + WRCR_TEXTURE_NORM_SIZE, tcoord.y + WRCR_TEXTURE_NORM_SIZE};
+        for (j = 0; j != 4; j++)
+        {
+            vertices = chunk->vertices + idx++;
+            vertices->pos = wrcr_block_vertices[i4 + j];
+            vertices->pos.x += chunk->coord.x + x;
+            vertices->pos.y += y;
+            vertices->pos.z += chunk->coord.z + z;
+            vertices->tex = (wrcr_tcoord_t){tcoord.x + wrcr_tex_norms[j].x, tcoord.y + wrcr_tex_norms[j].y};
+        }
 
         idx = chunk->size * 6;
 
-        chunk->indices[idx + 0] = chunk->vertex_idx + 0;
-        chunk->indices[idx + 1] = chunk->vertex_idx + 1;
-        chunk->indices[idx + 2] = chunk->vertex_idx + 2;
-        chunk->indices[idx + 3] = chunk->vertex_idx + 2;
-        chunk->indices[idx + 4] = chunk->vertex_idx + 1;
-        chunk->indices[idx + 5] = chunk->vertex_idx + 3;
+        indices = chunk->indices + idx;
+        *indices = chunk->vertex_idx;
+        indices[1] = chunk->vertex_idx + 1;
+        indices[2] = chunk->vertex_idx + 2;
+        indices[3] = indices[2];
+        indices[4] = indices[1];
+        indices[5] = chunk->vertex_idx + 3;
 
         chunk->vertex_idx += 4;
         chunk->size++;
@@ -168,11 +166,13 @@ bool wrcr_add_block(
 }
 
 bool wrcr_check_block(
-    wrcr_chunk_t *chunk, uint8_t x, uint16_t y, uint8_t z)
+    wrcr_chunk_t *chunk, wrcr_bcoord_t coord)
 {
-    if (x == 255 || x == WRCR_CHUNK_WIDTH ||
-        z == 255 || z == WRCR_CHUNK_WIDTH ||
-        y == 0xffff || y == WRCR_CHUNK_HEIGHT)
+    if (coord.y == 0xffff || coord.y == WRCR_CHUNK_HEIGHT)
         return false;
-    return wrcr_blocks[chunk->data[x][y][z]].is_solid;
+
+    if (coord.x == -1 || coord.x == WRCR_CHUNK_WIDTH ||
+        coord.z == -1 || coord.z == WRCR_CHUNK_WIDTH)
+        return wrcr_blocks[wrcr_gen_get_block(chunk->coord.x + coord.x, coord.y, chunk->coord.z + coord.z)].has_mesh;
+    return wrcr_blocks[chunk->data[coord.x][coord.y][coord.z]].has_mesh;
 }

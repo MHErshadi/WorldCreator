@@ -48,7 +48,7 @@ void wrcr_camera_init(
 
     _camera.fov = 45;
     _camera.screen_ratio = (float)_app.width / (float)_app.height;
-    _camera.far_clip = 100;
+    _camera.far_clip = 100000;
 
     _camera.cam_matrix = glGetUniformLocation(_world.shader, "camMatrix");
     _camera.cam_pos = glGetUniformLocation(_world.shader, "camPos");

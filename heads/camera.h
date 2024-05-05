@@ -19,7 +19,7 @@ copies or substantial portions of the Software.
 
 #include <wrcr.h>
 
-#define WRCR_CAMERA_WALK_SPEED 5 * 4.317f
+#define WRCR_CAMERA_WALK_SPEED 10 * 4.317f
 #define WRCR_CAMERA_SPRINT_SPEED 5.612f
 #define WRCR_CAMERA_SNEAK_SPEED 1.295f
 

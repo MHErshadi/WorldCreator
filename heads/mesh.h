@@ -30,8 +30,8 @@ GLuint wrcr_mesh_ebo_init(
     GLuint *indices, GLsizeiptr size);
 
 void wrcr_mesh_vao_link(
-    GLuint vbo, GLuint ebo);
+    GLuint vao, GLuint vbo, GLuint ebo);
 void wrcr_mesh_draw(
-    GLsizei size);
+    GLuint vao, GLsizei size);
 
 #endif

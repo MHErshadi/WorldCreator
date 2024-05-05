@@ -19,6 +19,11 @@ copies or substantial portions of the Software.
 
 #include <chunk.h>
 
+#define WRCR_WORLD_CHUNK_SIZE 16
+#define WRCR_WORLD_BLOCK_SIZE (WRCR_WORLD_CHUNK_SIZE * WRCR_CHUNK_WIDTH)
+
+#define WRCR_WORLD_CHUNK_AREA (WRCR_WORLD_CHUNK_SIZE * WRCR_WORLD_CHUNK_SIZE)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,10 +32,9 @@ struct __WRCR_WORLD_T
 {
     wrcr_color_t bg_color;
 
-    wrcr_chunk_t chunk;
+    wrcr_chunk_t *chunks;
 
     GLuint texture;
-    GLuint vao;
     GLuint shader;
 };
 struct __WRCR_WORLD_T _world;
