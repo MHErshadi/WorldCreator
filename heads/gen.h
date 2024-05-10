@@ -22,7 +22,4 @@ copies or substantial portions of the Software.
 wrcr_block_t wrcr_gen_get_block(
     uint32_t x, uint16_t y, uint32_t z);
 
-void wrcr_gen_get_tcoord(
-    wrcr_tcoord_t *coord, wrcr_block_t id);
-
 #endif

@@ -19,23 +19,13 @@ copies or substantial portions of the Software.
 
 #include <wrcr.h>
 
-#define WRCR_TEXTURE_BLOCK_SIZE 16
-#define WRCR_TEXTURE_NORM_SIZE (1.0f / WRCR_TEXTURE_BLOCK_SIZE)
-
 struct __WRCR_COORD_T
 {
-    GLdouble x;
-    GLdouble y;
-    GLdouble z;
+    GLuint x;
+    GLuint y;
+    GLuint z;
 };
 typedef struct __WRCR_COORD_T wrcr_coord_t;
-
-struct __WRCR_TCOORD_T
-{
-    GLfloat x;
-    GLfloat y;
-};
-typedef struct __WRCR_TCOORD_T wrcr_tcoord_t;
 
 struct __WRCR_FCOORD_T
 {
@@ -48,7 +38,7 @@ typedef struct __WRCR_FCOORD_T wrcr_fcoord_t;
 struct __WRCR_VERTEX_T
 {
     wrcr_coord_t pos;
-    wrcr_tcoord_t tex;
+    GLfloat texid;
 };
 typedef struct __WRCR_VERTEX_T wrcr_vertex_t;
 
@@ -73,35 +63,35 @@ typedef uint16_t wrcr_block_t;
 static wrcr_coord_t wrcr_block_vertices[24] =
 {
     // top
-    { 0.5,  0.5, -0.5},
-    { 0.5,  0.5,  0.5},
-    {-0.5,  0.5, -0.5},
-    {-0.5,  0.5,  0.5},
+    {1, 1, 0},
+    {1, 1, 1},
+    {0, 1, 0},
+    {0, 1, 1},
     // bottom
-    {-0.5, -0.5, -0.5},
-    {-0.5, -0.5,  0.5},
-    { 0.5, -0.5, -0.5},
-    { 0.5, -0.5,  0.5},
+    {0, 0, 0},
+    {0, 0, 1},
+    {1, 0, 0},
+    {1, 0, 1},
     // front
-    {-0.5, -0.5,  0.5},
-    {-0.5,  0.5,  0.5},
-    { 0.5, -0.5,  0.5},
-    { 0.5,  0.5,  0.5},
+    {0, 0, 1},
+    {0, 1, 1},
+    {1, 0, 1},
+    {1, 1, 1},
     // back
-    { 0.5, -0.5, -0.5},
-    { 0.5,  0.5, -0.5},
-    {-0.5, -0.5, -0.5},
-    {-0.5,  0.5, -0.5},
+    {1, 0, 0},
+    {1, 1, 0},
+    {0, 0, 0},
+    {0, 1, 0},
     // right
-    { 0.5, -0.5,  0.5},
-    { 0.5,  0.5,  0.5},
-    { 0.5, -0.5, -0.5},
-    { 0.5,  0.5, -0.5},
+    {1, 0, 1},
+    {1, 1, 1},
+    {1, 0, 0},
+    {1, 1, 0},
     // left
-    {-0.5, -0.5, -0.5},
-    {-0.5,  0.5, -0.5},
-    {-0.5, -0.5,  0.5},
-    {-0.5,  0.5,  0.5}
+    {0, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1},
+    {0, 1, 1}
 };
 
 static wrcr_fcoord_t wrcr_block_faces[6] =
@@ -112,14 +102,6 @@ static wrcr_fcoord_t wrcr_block_faces[6] =
     { 0,  0, -1},
     { 1,  0,  0},
     {-1,  0,  0}
-};
-
-static wrcr_tcoord_t wrcr_tex_norms[4] =
-{
-    {0, 0},
-    {0, WRCR_TEXTURE_NORM_SIZE},
-    {WRCR_TEXTURE_NORM_SIZE, 0},
-    {WRCR_TEXTURE_NORM_SIZE, WRCR_TEXTURE_NORM_SIZE}
 };
 
 static struct __WRCR_BLOCK_T wrcr_blocks[5] =

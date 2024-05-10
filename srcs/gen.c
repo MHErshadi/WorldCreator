@@ -26,19 +26,7 @@ wrcr_block_t wrcr_gen_get_block(
 
     if (y == 0)
         return WRCR_BLOCK_BEDROCK;
-    if (y % 2)
-        return WRCR_BLOCK_STONE;
     if (y != WRCR_CHUNK_HEIGHT - 1)
-        return WRCR_BLOCK_DIRT;
+        return WRCR_BLOCK_STONE;
     return WRCR_BLOCK_GRASS;
-}
-
-void wrcr_gen_get_tcoord(
-    wrcr_tcoord_t *coord, wrcr_block_t id)
-{
-    coord->y = (GLfloat)(id / WRCR_TEXTURE_BLOCK_SIZE);
-    coord->x = id - coord->y * WRCR_TEXTURE_BLOCK_SIZE;
-
-    coord->x *= WRCR_TEXTURE_NORM_SIZE;
-    coord->y = 1 - (coord->y + 1) * WRCR_TEXTURE_NORM_SIZE;
 }

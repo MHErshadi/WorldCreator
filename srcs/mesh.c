@@ -41,11 +41,11 @@ void wrcr_mesh_vao_link(
 {
     glEnableVertexArrayAttrib(vao, 0);
     glVertexArrayAttribBinding(vao, 0, 0);
-    glVertexArrayAttribFormat(vao, 0, 3, GL_DOUBLE, GL_FALSE, 0);
+    glVertexArrayAttribIFormat(vao, 0, 3, GL_UNSIGNED_INT, 0);
 
     glEnableVertexArrayAttrib(vao, 1);
     glVertexArrayAttribBinding(vao, 1, 0);
-    glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, sizeof(wrcr_coord_t));
+    glVertexArrayAttribFormat(vao, 1, 1, GL_FLOAT, GL_FALSE, sizeof(wrcr_coord_t));
 
     glVertexArrayVertexBuffer(vao, 0, vbo, 0, sizeof(wrcr_vertex_t));
     glVertexArrayElementBuffer(vao, ebo);

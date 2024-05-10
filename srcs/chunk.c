@@ -102,8 +102,8 @@ bool wrcr_add_block(
     GLuint *indices;
     wrcr_fcoord_t fcoord;
     wrcr_bcoord_t bcoord;
-    wrcr_tcoord_t tcoord;
     uint32_t idx;
+    uint16_t texid;
     uint8_t i4, j;
 
     if (!wrcr_blocks[chunk->data[x][y][z]].has_mesh)
@@ -133,11 +133,10 @@ bool wrcr_add_block(
             chunk->indices = indices;
         }
 
-        wrcr_gen_get_tcoord(&tcoord, wrcr_blocks[chunk->data[x][y][z]].texid[i]);
-
         idx = chunk->size << 2;
         i4 = i << 2;
 
+        texid = wrcr_blocks[chunk->data[x][y][z]].texid[i];
         for (j = 0; j != 4; j++)
         {
             vertices = chunk->vertices + idx++;
@@ -145,7 +144,7 @@ bool wrcr_add_block(
             vertices->pos.x += chunk->coord.x + x;
             vertices->pos.y += y;
             vertices->pos.z += chunk->coord.z + z;
-            vertices->tex = (wrcr_tcoord_t){tcoord.x + wrcr_tex_norms[j].x, tcoord.y + wrcr_tex_norms[j].y};
+            vertices->texid = (GLfloat)texid + ((GLuint)j << 16);
         }
 
         idx = chunk->size * 6;
